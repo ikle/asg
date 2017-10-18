@@ -27,9 +27,9 @@ with open ('test.netlist', 'r') as f:
 		source, sink, port = line.split ()
 		port = int (port)
 
-		for node in (source, sink):
-			if not node in nodes:
-				init_node (node)
+		for n in (source, sink):
+			if not n in nodes:
+				init_node (n)
 
 		nodes[source]['links'].append ([sink, port])
 
@@ -45,10 +45,10 @@ with open ('test.netlist', 'r') as f:
 layers = {}
 
 # 1. layer nodes
-def layer_node (node):
-	layer = node['layer']
+def layer_node (n):
+	layer = n['layer']
 
-	for link in node['links']:
+	for link in n['links']:
 		sink = nodes[link[0]]
 
 		if sink['layer'] <= layer:
