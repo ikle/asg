@@ -60,6 +60,8 @@ the same time as the previous step.)
     an edge exists to the given node.
 3.  Sort the nodes by weight in each layer.
 
+![Pic 5](pic-005.svg)
+
 ## Make Edges Orthogonal
 
 1.  For each two adjacent layers, create a strip for each output port of
