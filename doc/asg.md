@@ -41,6 +41,8 @@ sink node and the source node. Divide each edge with a length l, greater
 than one, on l edges, inserting a phantom passthrough nodes between them,
 distributing them accordingly on layers.
 
+![Pic 3](pic-003.svg)
+
 ## Reduce Phantom Node Count
 
 Combine all phantom nodes in the same layer to one if they are connected
