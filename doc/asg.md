@@ -28,6 +28,8 @@ sink node input index.
 Distribute the nodes along the layers so that the layer number for some
 node is the maximum number of edges from the given node to an input node.
 
+![Pic 1](pic-001.svg)
+
 ## Add Passthrough Phantom Nodes
 
 Let the length of the edge is the difference of the layer numbers of the
