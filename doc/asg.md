@@ -49,6 +49,8 @@ Combine all phantom nodes in the same layer to one if they are connected
 by an edge to the same node from the previous layer. (This can be done at
 the same time as the previous step.)
 
+![Pic 4](pic-004.svg)
+
 ## Order Nodes in Layers
 
 1.  Assign weights to each node in the first layer starting from zero
