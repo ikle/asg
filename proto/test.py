@@ -24,24 +24,27 @@ def init_wire (layer, sink, port):
 	return i
 
 # 0. read netlist
+def nodes_parse_line (nodes, line):
+	source, sink, port = line.split ()
+	port = int (port)
+
+	for n in (source, sink):
+		if not n in nodes:
+			nodes[n] = netlist.node ()
+
+	nodes[source].links.append ([sink, port])
+
+	if nodes[source].type == 'output':
+		nodes[source].type = 'gate'
+
+	nodes[sink].ports = nodes[sink].ports + 1
+
+	if nodes[sink].type == 'input':
+		nodes[sink].type = 'output'
+
 with open ('test.netlist', 'r') as f:
 	for line in f:
-		source, sink, port = line.split ()
-		port = int (port)
-
-		for n in (source, sink):
-			if not n in nodes:
-				nodes[n] = netlist.node ()
-
-		nodes[source].links.append ([sink, port])
-
-		if nodes[source].type == 'output':
-			nodes[source].type = 'gate'
-
-		nodes[sink].ports = nodes[sink].ports + 1
-
-		if nodes[sink].type == 'input':
-			nodes[sink].type = 'output'
+		nodes_parse_line (nodes, line)
 
 # 1. layer nodes
 def layer_node (n):
@@ -52,8 +55,11 @@ def layer_node (n):
 			sink.layer = n.layer + 1
 			layer_node (sink)
 
-for n in nodes.values ():
-	layer_node (n)
+def layer_nodes (nodes):
+	for n in nodes.values ():
+		layer_node (n)
+
+layer_nodes (nodes)
 
 # 2. move outputs to last layer
 def last_layer ():
@@ -65,11 +71,14 @@ def last_layer ():
 
 	return last
 
-for n in nodes.values ():
+def pool_out_outputs (nodes):
 	last = last_layer ()
 
-	if n.type == 'output':
-		n.layer = last
+	for n in nodes.values ():
+		if n.type == 'output':
+			n.layer = last
+
+pool_out_outputs (nodes)
 
 # 3. add passthrough phantom nodes
 def link_length (n, l):
@@ -119,15 +128,20 @@ for n in real_nodes:
 	reduce_phantoms (n)
 
 # distribute nodes into layers
-layers = {}
+def get_layers (nodes):
+	layers = {}
 
-for n in nodes.values ():
-	l = n.layer
+	for n in nodes.values ():
+		l = n.layer
 
-	if not l in layers:
-		layers[l] = []
+		if not l in layers:
+			layers[l] = []
 
-	layers[l].append (n)
+		layers[l].append (n)
+
+	return layers
+
+layers = get_layers (nodes)
 
 # 5. order nodes
 def weight_node (n, weight):
@@ -158,9 +172,12 @@ def weight_layer (i):
 		for l in n.links:
 			normalize_node (nodes[l[0]])
 
-for i in range (1, len (layers)):
-	weight_layer (i)
-	list.sort (layers[i], key = lambda n: n.y)
+def weight_layers (layers):
+	for i in range (1, len (layers)):
+		weight_layer (i)
+		list.sort (layers[i], key = lambda n: n.y)
+
+weight_layers (layers)
 
 # test
 # pprint (layers)
