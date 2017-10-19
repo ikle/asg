@@ -129,44 +129,6 @@ for n in nodes.values ():
 
 	layers[l].append (n)
 
-# dispose nodes
-def dispose_layer_nodes (l):
-	y = p = netlist.p
-
-	for n in l:
-		t = n.type
-
-		if t == 'input' or t == 'output':
-			h = p
-		elif t == 'wire':
-			h = 0
-		else:
-			h = n.ports * p + p
-
-		n.y = y
-		n.h = h
-
-		y = y + h + p
-
-	return y
-
-def dispose_nodes ():
-	width  = p = netlist.p
-	height = p
-
-	for l in layers.values ():
-		y = dispose_layer_nodes (l)
-
-		if height < y:
-			height = y
-
-		for n in l:
-			n.x = width
-
-		width += (2 + 1 + 3) * p
-
-	return width - 3 * p, height
-
 # 5. order nodes
 def weight_node (n, weight):
 	if not hasattr (n, 'y'):
@@ -183,7 +145,7 @@ def normalize_node (n):
 
 def weight_layer (i):
 #	weight = 0
-	dispose_layer_nodes (layers[i - 1])
+	netlist.dispose_layer_nodes (layers[i - 1])
 
 	for n in layers[i - 1]:
 		for l in n.links:
@@ -206,7 +168,7 @@ for i in range (1, len (layers)):
 # show schema
 import cairo
 
-width, height = dispose_nodes ()
+width, height = netlist.dispose_nodes (layers)
 surface = cairo.SVGSurface ("test.svg", width, height)
 c = cairo.Context (surface)
 

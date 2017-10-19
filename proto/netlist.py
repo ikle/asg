@@ -71,3 +71,41 @@ def show_nodes (c, nodes):
 def show_links (c, nodes):
 	for o in nodes.values ():
 		o.show_node_links (c, nodes)
+
+# dispose nodes
+def dispose_layer_nodes (layer):
+	y = p
+
+	for n in layer:
+		t = n.type
+
+		if t == 'input' or t == 'output':
+			h = p
+		elif t == 'wire':
+			h = 0
+		else:
+			h = n.ports * p + p
+
+		n.y = y
+		n.h = h
+
+		y = y + h + p
+
+	return y
+
+def dispose_nodes (layers):
+	width  = p
+	height = p
+
+	for layer in layers.values ():
+		y = dispose_layer_nodes (layer)
+
+		if height < y:
+			height = y
+
+		for n in layer:
+			n.x = width
+
+		width += (2 + 1 + 3) * p
+
+	return width - 3 * p, height
